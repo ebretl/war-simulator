@@ -115,9 +115,9 @@ if __name__ == '__main__':
     else:
         turn_count_map = dict()
 
-    for i in range(100000):
-        if i % 1000 == 0:
-            print("game", i)
+    for i in range(10000):
+        # if i % 1000 == 0:
+        #     print("game", i)
 
         winner, turns = playgame()
 
@@ -126,15 +126,15 @@ if __name__ == '__main__':
         else:
             p2_wins += 1
 
-        if turns in turn_count_map.keys():
+        if turns in turn_count_map:
             turn_count_map[turns] += 1
         else:
             turn_count_map[turns] = 1
     
-    with open('war.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        for pair in sorted(turn_count_map.items()):
-            # print(pair)
-            writer.writerow(pair)
+    # with open('war.csv', 'w', newline='') as file:
+    #     writer = csv.writer(file)
+    #     for pair in sorted(turn_count_map.items()):
+    #         # print(pair)
+    #         writer.writerow(pair)
 
     print(p1_wins, 'wins to', p2_wins)
