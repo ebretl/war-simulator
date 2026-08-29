@@ -52,7 +52,7 @@ bool operator<(const Card& lhs, const Card& rhs) {
 class Player final {
  public:
     explicit Player(mt19937& rand_gen, vector<Card>&& cards) 
-    : rand_gen_{rand_gen}, draw_{move(cards)} {
+    : rand_gen_{rand_gen}, draw_{std::move(cards)} {
         draw_.reserve(52);
         discard_.reserve(52);
     }
