@@ -3,6 +3,9 @@
 #include <random>
 #include <optional>
 #include <deque>
+#include <algorithm>
+#include <map>
+#include <iomanip>
 
 using namespace std;
 
@@ -97,6 +100,12 @@ struct GameResult {
     size_t turn_count = 0;
 };
 
+// Statistics tracker per turn count
+struct TurnStats {
+    size_t p1_wins = 0;
+    size_t p2_wins = 0;
+};
+
 Winner play_turn(Player& p1, Player& p2, deque<Card>& pot) {
     pot.push_front(*p1.fight());
     pot.push_back(*p2.fight());
@@ -160,21 +169,27 @@ int main(int argc, char* argv[]) {
 
     mt19937 rand_gen{random_device{}()};
 
-    for (size_t game_count = 0; game_count < 100; ++game_count) {
+    map<size_t, TurnStats> stats;
+    
+    size_t num_games = 100;
+    if (argc > 1) {
+        num_games = stoi(argv[1]);
+    }
+
+    for (size_t game_count = 0; game_count < num_games; ++game_count) {
         const auto result = play_game(deck, rand_gen);
 
-        switch (result.winner) {
-            case WINNER_P1:
-                cout << "P1";
-                break;
-            case WINNER_P2:
-                cout << "P2";
-                break;
-            case WINNER_TIE:
-                cout << "Tie";
-                break;
+        if (!stats.count(result.turn_count)) {
+            stats[result.turn_count] = TurnStats{};
         }
-        cout << " in " << result.turn_count << endl;
+        stats[result.turn_count].p1_wins += (result.winner == WINNER_P1);
+        stats[result.turn_count].p2_wins += (result.winner == WINNER_P2);
+    }
+
+    // Output CSV
+    cout << "game_length,p1_wins,p2_wins" << endl;
+    for (const auto& [turns, s] : stats) {
+        cout << turns << "," << s.p1_wins << "," << s.p2_wins << endl;
     }
 
     return EXIT_SUCCESS;
